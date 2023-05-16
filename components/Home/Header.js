@@ -89,7 +89,7 @@ export default ({ navigation }) => {
             gap: 30,
           }}
         >
-          {dataHd.map((val, index) => {
+          {dataHd.map((val) => {
             return (
               <TouchableOpacity
                 style={{

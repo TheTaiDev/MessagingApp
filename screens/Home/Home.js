@@ -1,5 +1,12 @@
-import { Text, View, SafeAreaView } from "react-native";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  SafeAreaViewBase,
+  ScrollView,
+} from "react-native";
 import React, { Component } from "react";
+import CustomListItem from "../../components/CustomListItem";
 import Header from "../../components/Home/Header";
 export class Home extends Component {
   render() {
@@ -11,6 +18,9 @@ export class Home extends Component {
         }}
       >
         <Header />
+        <ScrollView>
+          <CustomListItem />
+        </ScrollView>
       </SafeAreaView>
     );
   }

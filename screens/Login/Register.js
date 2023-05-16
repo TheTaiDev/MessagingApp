@@ -12,8 +12,10 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-
+import { auth } from "../../firebase";
+import { db } from "../../firebase";
 import AppLoading from "expo-app-loading";
 
 import {
@@ -36,15 +38,20 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imglog, setImglogo] = useState("");
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerBackTitle: "",
-    });
-  });
-
-  const register = () => {};
-
+  const register = () => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((authUser) => {
+        authUser.user.updateProfile({
+          displayName: name,
+          photoURL:
+            imglog ||
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMDjBtqrSIJFs807qb6cg3ySbEzizhcwe2J4gnAcs4bg&s",
+        });
+        navigation.replace("Login");
+      })
+      .catch((error) => alert(error.massage));
+  };
   let [fontsLoaded] = useFonts({
     Roboto_500Medium,
   });

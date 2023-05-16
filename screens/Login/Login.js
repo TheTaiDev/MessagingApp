@@ -6,8 +6,9 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import AppLoading from "expo-app-loading";
+import { auth } from "../../firebase";
 
 import {
   useFonts,
@@ -27,6 +28,15 @@ import {
 export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const unsubrice = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        navigation.replace("HomePage");
+      }
+    });
+    return unsubrice;
+  }, []);
   const signIn = () => {};
 
   let [fontsLoaded] = useFonts({
