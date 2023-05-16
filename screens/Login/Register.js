@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 
 import {
   Text,
@@ -6,11 +11,8 @@ import {
   SafeAreaView,
   TextInput,
   Image,
-  Button,
   TouchableOpacity,
-  StatusBar,
 } from "react-native";
-import DocumentPicker from "react-native-document-picker";
 
 import AppLoading from "expo-app-loading";
 
@@ -34,6 +36,14 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imglog, setImglogo] = useState("");
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle: "",
+    });
+  });
+
+  const register = () => {};
 
   let [fontsLoaded] = useFonts({
     Roboto_500Medium,
@@ -143,7 +153,8 @@ export default ({ navigation }) => {
             <TextInput
               value={imglog}
               onChangeText={(text) => setImglogo(text)}
-              placeholder="Upload Avatar"
+              onSubmitEditing={register}
+              placeholder="Profile Picture URL"
               style={{
                 width: 350,
                 borderRadius: 8,
@@ -169,6 +180,7 @@ export default ({ navigation }) => {
               }}
             >
               <Text
+                onPress={register}
                 style={{
                   fontSize: 16,
                   lineHeight: 24,
