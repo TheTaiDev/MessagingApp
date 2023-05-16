@@ -12,11 +12,11 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { auth } from "../../firebase";
 import { db } from "../../firebase";
 import AppLoading from "expo-app-loading";
+import { Alert } from "react-native-modal";
 
 import {
   useFonts,
@@ -50,7 +50,21 @@ export default ({ navigation }) => {
         });
         navigation.replace("Login");
       })
-      .catch((error) => alert(error.massage));
+      .catch((error) => {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            alert("Địa chỉ email đã được sử dụng.");
+            break;
+          case "auth/invalid-email":
+            alert("Địa chỉ email không hợp lệ.");
+            break;
+          case "auth/weak-password":
+            alert("Mật khẩu không đủ mạnh.");
+            break;
+          default:
+            alert("Đã xảy ra lỗi khi tạo tài khoản.", error.message);
+        }
+      });
   };
   let [fontsLoaded] = useFonts({
     Roboto_500Medium,

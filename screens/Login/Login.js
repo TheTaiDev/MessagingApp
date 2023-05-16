@@ -28,6 +28,7 @@ import {
 export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const unsubrice = auth.onAuthStateChanged((authUser) => {
@@ -37,7 +38,20 @@ export default ({ navigation }) => {
     });
     return unsubrice;
   }, []);
-  const signIn = () => {};
+  const signIn = () => {
+    auth.signInWithEmailAndPassword(email, password).catch((error) => {
+      if (error.code === "auth/user-not-found") {
+        // Người dùng không tồn tại
+        setError("Người dùng không tồn tại");
+      } else if (error.code === "auth/wrong-password") {
+        // Sai mật khẩu
+        setError("Sai mật khẩu");
+      } else if (error.code === "auth/invalid-email") {
+        // Email không hợp lệ
+        setError("Email không hợp lệ");
+      } 
+    });
+  };
 
   let [fontsLoaded] = useFonts({
     Roboto_100Thin,
@@ -142,16 +156,8 @@ export default ({ navigation }) => {
                 backgroundColor: "#F5F5FA",
               }}
             ></TextInput>
-            <Text
-              style={{
-                fontSize: 16,
-                lineHeight: 24,
-                fontWeight: 400,
-                color: "#2E2E5D",
-              }}
-            >
-              Remember me
-            </Text>
+
+            {error !== "" && <Text style={{ color: "red" }}>{error}</Text>}
 
             <TouchableOpacity
               onPress={signIn}
