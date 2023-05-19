@@ -45,7 +45,10 @@ export default function Chat({ navigation, route }) {
           <Avatar
             rounded
             source={{
-              uri: auth?.currentUser?.photoURL,
+              uri:
+                messages.length > 0 && messages[0]?.data.photoURL
+                  ? messages[0]?.data.photoURL
+                  : "https://example.com/default-avatar.jpg",
             }}
           />
           <Text
@@ -161,6 +164,7 @@ export default function Chat({ navigation, route }) {
                       color: "black",
                       fontWeight: 500,
                       marginLeft: 10,
+                      fontSize: 16,
                     }}
                   >
                     {" "}
@@ -174,12 +178,14 @@ export default function Chat({ navigation, route }) {
                 <View
                   key={id}
                   style={{
-                    padding: 15,
-                    backgroundColor: "#ECECEC",
+                    padding: 10,
+                    backgroundColor: "#2F80ED",
                     alignSelf: "flex-start",
                     borderRadius: 20,
                     marginLeft: 15,
                     maxWidth: "80%",
+                    marginBottom: 20,
+                    color: "#FFFFFF",
                     position: "relative",
                   }}
                 >
@@ -203,15 +209,16 @@ export default function Chat({ navigation, route }) {
                   />
                   <Text
                     style={{
-                      color: "black",
+                      color: "#FFFFFF",
                       fontWeight: 500,
                       marginLeft: 10,
+                      fontSize: 16,
                     }}
                   >
                     {" "}
                     {data.message}{" "}
                   </Text>
-                  <Text
+                  {/* <Text
                     style={{
                       left: 10,
                       paddingRight: 10,
@@ -221,7 +228,7 @@ export default function Chat({ navigation, route }) {
                   >
                     {" "}
                     {data.displayName}{" "}
-                  </Text>
+                  </Text> */}
                 </View>
               )
             )}

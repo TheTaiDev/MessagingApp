@@ -1,10 +1,27 @@
 import { Text, View } from "react-native";
-import React, { Component } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ListItem } from "@rneui/themed";
 import { Avatar } from "@rneui/base";
-import { auth } from "../firebase";
+import { db } from "../firebase";
 
 export default function CustomListItem({ id, chatName, enterChat }) {
+  const [chatMessages, setChatMessages] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("chats")
+      .doc(id)
+      .collection("messages")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) =>
+        setChatMessages(snapshot.docs.map((doc) => doc.data()))
+      );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <ListItem
       onPress={() => enterChat(id, chatName)}
@@ -19,7 +36,9 @@ export default function CustomListItem({ id, chatName, enterChat }) {
       <Avatar
         rounded
         source={{
-          uri: auth?.currentUser?.photoURL,
+          uri:
+            chatMessages[0]?.photoURL ||
+            "https://thumbs.dreamstime.com/b/avatar-icon-social-icon-exclamation-mark-avatar-icon-alert-error-alarm-danger-symbol-avatar-icon-social-icon-118920146.jpg",
         }}
       />
       <ListItem.Content>
