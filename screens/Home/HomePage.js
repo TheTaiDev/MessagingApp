@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import React, { Component } from "react";
-import Home from "./Home";
+import HomeScreen from "./HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Calls from "./Calls";
 import Profile from "./Profile";
@@ -10,18 +10,20 @@ const Tab = createBottomTabNavigator();
 
 export default function HomePage() {
   return (
+    
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeScreen"
       screenOptions={{
-        tabBarActiveTintColor: "#e91e63",
+        tabBarActiveTintColor: "#2F80ED",
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={Home}
+        name="HomeScreen"
+        component={HomeScreen}
         options={{
           headerShown: false,
           tabBarLabel: "Home",
+
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),

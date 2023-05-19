@@ -14,30 +14,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { auth } from "../../firebase";
-import { db } from "../../firebase";
 import AppLoading from "expo-app-loading";
-import { Alert } from "react-native-modal";
 
 import {
   useFonts,
-  Roboto_100Thin,
-  Roboto_100Thin_Italic,
-  Roboto_300Light,
-  Roboto_300Light_Italic,
-  Roboto_400Regular,
-  Roboto_400Regular_Italic,
-  Roboto_500Medium,
-  Roboto_500Medium_Italic,
   Roboto_700Bold,
-  Roboto_700Bold_Italic,
-  Roboto_900Black,
-  Roboto_900Black_Italic,
+  Roboto_500Medium,
 } from "@expo-google-fonts/roboto";
 export default ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imglog, setImglogo] = useState("");
+
   const register = () => {
     auth
       .createUserWithEmailAndPassword(email, password)
@@ -46,7 +35,7 @@ export default ({ navigation }) => {
           displayName: name,
           photoURL:
             imglog ||
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMDjBtqrSIJFs807qb6cg3ySbEzizhcwe2J4gnAcs4bg&s",
+            "https://png.pngtree.com/png-clipart/20201224/ourlarge/pngtree-cartoon-avatar-funny-avatar-man-avatar-exaggerated-avatar-png-image_2625097.jpg",
         });
         navigation.replace("Login");
       })
