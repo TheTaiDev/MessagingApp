@@ -1,5 +1,7 @@
 import {
+  Keyboard,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StatusBar,
   Text,
@@ -7,14 +9,28 @@ import {
 } from "react-native";
 import React, { Component, useLayoutEffect, useState } from "react";
 import { Avatar } from "@rneui/base";
-import { auth } from "../../firebase";
-import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
+import { auth, db } from "../../firebase";
+import {
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import {
+  addDoc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
+
 export default function Chat({ navigation, route }) {
   const [input, setInput] = useState("");
+  const [messages, setMessage] = useState([]);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chat",
@@ -63,7 +79,36 @@ export default function Chat({ navigation, route }) {
       ),
     });
   });
-  const sendMess = () => {};
+  const sendMess = () => {
+    Keyboard.dismiss();
+    addDoc(collection(db, "chats", route.params.id, "messages"), {
+      timestamp: serverTimestamp(),
+      message: input,
+      displayName: auth.currentUser.displayName,
+      email: auth.currentUser.email,
+      photoURL: auth.currentUser.photoURL,
+    });
+    setInput("");
+  };
+  useLayoutEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, "chats", route.params.id, "messages"),
+        orderBy("timestamp", "desc")
+      ),
+      (snapshot) =>
+        setMessage(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [route]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFF" }}>
       <StatusBar style="light" />
@@ -74,8 +119,113 @@ export default function Chat({ navigation, route }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={90}
       >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} />
         <>
-          <ScrollView>{/* {chat content} */}</ScrollView>
+          <ScrollView
+            contentContainerStyle={{
+              paddingTop: 15,
+            }}
+          >
+            {messages.map(({ id, data }) =>
+              data.email === auth.currentUser.email ? (
+                <View
+                  key={id}
+                  style={{
+                    padding: 10,
+                    backgroundColor: "#ECECEC",
+                    alignSelf: "flex-end",
+                    borderRadius: 20,
+                    marginRight: 15,
+                    marginBottom: 20,
+                    maxWidth: "80%",
+                    position: "relative",
+                  }}
+                >
+                  <Avatar
+                    containerStyle={{
+                      bottom: -15,
+                      right: -5,
+                      position: "absolute",
+                    }}
+                    bottom={-15}
+                    right={-5}
+                    position="absolute"
+                    rounded
+                    size={25}
+                    source={{
+                      uri: data.photoURL,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      color: "black",
+                      fontWeight: 500,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {" "}
+                    {data.message}{" "}
+                  </Text>
+                  {/*  */}
+                </View>
+              ) : (
+                //   sender
+
+                <View
+                  key={id}
+                  style={{
+                    padding: 15,
+                    backgroundColor: "#ECECEC",
+                    alignSelf: "flex-start",
+                    borderRadius: 20,
+                    marginLeft: 15,
+                    maxWidth: "80%",
+                    position: "relative",
+                  }}
+                >
+                  <Avatar
+                    containerStyle={{
+                      bottom: -15,
+                      right: -5,
+                      position: "absolute",
+                    }}
+                    bottom={-15}
+                    right={-5}
+                    position="absolute"
+                    rounded
+                    size={25}
+                    source={{
+                      uri: data.photoURL,
+                    }}
+                    // source={{
+                    //   uri: data.photoURL,
+                    // }}
+                  />
+                  <Text
+                    style={{
+                      color: "black",
+                      fontWeight: 500,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {" "}
+                    {data.message}{" "}
+                  </Text>
+                  <Text
+                    style={{
+                      left: 10,
+                      paddingRight: 10,
+                      fontSize: 10,
+                      color: "#FFFF",
+                    }}
+                  >
+                    {" "}
+                    {data.displayName}{" "}
+                  </Text>
+                </View>
+              )
+            )}
+          </ScrollView>
           <View
             style={{
               flexDirection: "row",
@@ -85,8 +235,20 @@ export default function Chat({ navigation, route }) {
             }}
           >
             <TextInput
+              style={{
+                bottom: 0,
+                height: 40,
+                marginRight: 15,
+                borderTopColor: "transparent",
+                backgroundColor: "#ECECEC",
+                flex: 1,
+                padding: 10,
+                color: "grey",
+                borderRadius: 30,
+              }}
               value={input}
               onChangeText={(text) => setInput(text)}
+              onSubmitEditing={sendMess}
               placeholder="Enter Messenger"
             />
             <TouchableOpacity onPress={sendMess} activeOpacity={0.5}>
@@ -94,6 +256,7 @@ export default function Chat({ navigation, route }) {
             </TouchableOpacity>
           </View>
         </>
+        <TouchableWithoutFeedback />
         {/* <Text>{route.params.chatName}</Text> */}
       </KeyboardAvoidingView>
     </SafeAreaView>

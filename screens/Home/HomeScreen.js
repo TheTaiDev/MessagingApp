@@ -7,13 +7,21 @@ const Stack = createStackNavigator();
 
 export default function HomeScreen() {
   return (
-    
     <Stack.Navigator
-    
       initialRouteName="Home"
-      screenOptions={{ headerShown: false, }}
+      screenOptions={{ headerShown: true }}
     >
-      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen
+        options={{
+          headerStyle: {
+            backgroundColor: "#2F80ED",
+          },
+          headerTintColor: "#FFFF",
+          headerTitleStyle: {},
+        }}
+        name="Home"
+        component={Home}
+      />
       <Stack.Screen
         options={{
           headerShown: true,
@@ -28,11 +36,9 @@ export default function HomeScreen() {
         component={AddChat}
       />
       <Stack.Screen
-      
         options={{
-          
           headerShown: true,
-          
+
           title: "Chat",
           headerStyle: {
             backgroundColor: "#2F80ED",

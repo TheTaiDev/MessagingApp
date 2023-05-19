@@ -13,12 +13,11 @@ export default ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const secondInputRef = useRef(null);
 
   useEffect(() => {
     const unsubrice = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        navigation.replace("HomePage");
+        navigation.replace("HomeScreen");
       }
     });
     return unsubrice;

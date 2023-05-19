@@ -1,10 +1,71 @@
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  Button,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import CustomListItem from "../../components/CustomListItem";
 import Icon from "react-native-vector-icons/Ionicons";
 import { db } from "../../firebase";
+import { auth } from "../../firebase";
+import { Avatar } from "@rneui/base";
+export default function Home({ navigation, route, chatName }) {
+  const signOutUser = () => {
+    auth.signOut().then(() => {
+      navigation.replace("HomeLogin");
+    });
+  };
 
-export default function Home({ navigation }) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Chat",
+      headerTitleAlign: "left",
+      headerTitle: () => (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Avatar
+            onPress={signOutUser}
+            rounded
+            source={{
+              uri: auth?.currentUser?.photoURL,
+            }}
+          />
+        </View>
+      ),
+      headerRight: () => (
+        <View
+          style={{
+            flexDirection: "row",
+            marginRight: 20,
+          }}
+        >
+          <Button
+            onPress={() => navigation.navigate("AddChat")}
+            title="New Chat"
+            titleStyle={{ fontWeight: "500" }}
+            buttonStyle={{
+              backgroundColor: "rgba(90, 154, 230, 1)",
+              borderColor: "transparent",
+              borderWidth: 0,
+            }}
+            containerStyle={{
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          />
+        </View>
+      ),
+    });
+  });
+
   const [chats, setChats] = useState([]);
   useEffect(() => {
     const unsubscribe = db.collection("chats").onSnapshot((snapshot) =>
@@ -34,36 +95,6 @@ export default function Home({ navigation }) {
         height: "100%",
       }}
     >
-      <View
-        style={{
-          paddingTop: 50,
-          marginHorizontal: 20,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontWeight: 700,
-              fontSize: 18,
-              lineHeight: 24,
-            }}
-          >
-            Recent Chats
-          </Text>
-          <Icon
-            onPress={() => navigation.navigate("AddChat")}
-            name="chatbubble-outline"
-            size={24}
-            color={"#4F5E7B"}
-          />
-        </View>
-      </View>
       <ScrollView>
         {chats.map(({ id, data: { chatName } }) => (
           <CustomListItem
